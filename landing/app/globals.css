@@ -1,0 +1,888 @@
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Tema claro: fondo blanco con azul de marca */
+  --cm-primary: #2563eb;
+  --cm-primary-shade: #1d4ed8;
+  --cm-secondary: #4c8dff;
+  --cm-accent: #2563eb;
+  --cm-accent-shade: #1d4ed8;
+  --cm-danger: #dc2626;
+  --cm-success: #16a34a;
+
+  --cm-bg: #ffffff;
+  --cm-bg-2: #f1f5fb;
+  --cm-surface: #f6f9ff;
+  --cm-surface-2: #eaf1ff;
+  --cm-text: #0f1c33;
+  --cm-text-muted: #5b6b85;
+  --cm-border: #dce5f3;
+
+  --cm-radius: 16px;
+  --cm-shadow: 0 18px 40px rgba(37, 99, 235, 0.12);
+
+  /* Verde de WhatsApp (no es color de marca, pero centralizado como token) */
+  --cm-whatsapp: #25d366;
+  --cm-whatsapp-shade: #1da851;
+
+  /* Verde del CTA "comprar" y del sello de confianza. Derivado de --cm-success
+     para mantener consistencia; centralizado como token siguiendo el patrón de
+     --cm-whatsapp (nunca hex sueltos inline). */
+  --cm-cta: #16a34a;
+  --cm-cta-shade: #128a3e;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--cm-bg);
+  color: var(--cm-text);
+  font-family: "Montserrat", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.container {
+  width: 100%;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* ── Navbar ── */
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 22px 0;
+}
+.nav-cta {
+  padding: 10px 18px;
+  font-size: 0.95rem;
+  white-space: nowrap;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+  font-size: 1.25rem;
+  letter-spacing: -0.02em;
+  text-decoration: none;
+  color: inherit;
+}
+.brand-logo {
+  height: 34px;
+  width: auto;
+  display: block;
+}
+.brand-mark {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--cm-primary), var(--cm-secondary));
+  display: grid;
+  place-items: center;
+  color: #fff;
+  font-weight: 800;
+}
+.nav-links {
+  display: flex;
+  gap: 28px;
+  align-items: center;
+  color: var(--cm-text-muted);
+  font-size: 0.95rem;
+}
+.nav-links a:hover {
+  color: var(--cm-text);
+}
+
+/* ── Buttons ── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 1rem;
+  padding: 14px 24px;
+  border-radius: 999px;
+  transition: transform 0.06s ease, background 0.2s ease, opacity 0.2s ease;
+}
+.btn:active {
+  transform: translateY(1px);
+}
+.btn-primary {
+  background: linear-gradient(135deg, var(--cm-primary), var(--cm-secondary));
+  color: #fff;
+}
+.btn-primary:hover {
+  opacity: 0.92;
+}
+.btn-accent {
+  background: var(--cm-accent);
+  color: #fff;
+}
+.btn-accent:hover {
+  background: var(--cm-accent-shade);
+}
+.btn-ghost {
+  background: transparent;
+  color: var(--cm-text);
+  border: 1px solid var(--cm-border);
+}
+.btn-cta {
+  background: var(--cm-cta);
+  color: #fff;
+}
+.btn-cta:hover {
+  background: var(--cm-cta-shade);
+}
+.btn-cta:focus-visible {
+  outline: 3px solid var(--cm-primary);
+  outline-offset: 3px;
+}
+.btn[disabled] {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.btn-block {
+  width: 100%;
+}
+
+/* ── Hero (16:9 con texto a la izquierda en desktop) ── */
+.hero-banner {
+  width: 100%;
+  background: linear-gradient(180deg, #eceef2 0%, #f3f6fb 55%, #ffffff 100%);
+  border-bottom: 1px solid var(--cm-border);
+  padding-bottom: 28px;
+}
+.hero-media {
+  position: relative;
+  width: 100%;
+  /* Misma proporción que la imagen (16:9) → llena todo el ancho sin recortar
+     el producto y sin dejar filos del fondo a los lados. */
+  aspect-ratio: 16 / 9;
+}
+.hero-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+/* Velo blanco a la izquierda para que el texto se lea sobre la foto + fade abajo */
+.hero-scrim {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(to top, #ffffff 0%, rgba(255, 255, 255, 0) 22%),
+    linear-gradient(
+      to right,
+      rgba(248, 250, 253, 0.96) 0%,
+      rgba(248, 250, 253, 0.85) 32%,
+      rgba(248, 250, 253, 0) 58%
+    );
+}
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+}
+.hero-copy {
+  text-align: left;
+  max-width: 480px;
+}
+.hero-copy h1 {
+  font-size: clamp(2.2rem, 5vw, 3.6rem);
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  margin: 0 0 18px;
+}
+.hero-copy h1 .hl {
+  background: linear-gradient(135deg, var(--cm-primary), var(--cm-secondary));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.hero-copy p.sub {
+  font-size: 1.15rem;
+  color: var(--cm-text-muted);
+  max-width: 480px;
+  margin: 0 0 28px;
+  line-height: 1.6;
+}
+.hero-cta {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.hero-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+  padding-top: 24px;
+}
+.hero-tags span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--cm-surface-2);
+  border: 1px solid var(--cm-border);
+  border-radius: 999px;
+  padding: 10px 18px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--cm-primary);
+}
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: var(--cm-text-muted);
+  background: var(--cm-surface);
+  border: 1px solid var(--cm-border);
+  padding: 8px 14px;
+  border-radius: 999px;
+  margin-bottom: 22px;
+}
+.pill .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--cm-success);
+}
+
+/* ── Hero póster (mobile-first: una columna, producto protagonista) ── */
+.poster {
+  background: linear-gradient(180deg, var(--cm-surface) 0%, var(--cm-bg) 70%);
+}
+.poster-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 22px;
+  /* Margen horizontal igual que el resto de la página (.container: 0 20px);
+     el shorthand no debe dejar los lados en 0 o el hero se pega a los bordes. */
+  padding: 32px 20px 48px;
+}
+.poster-logo {
+  height: 40px;
+  width: auto;
+  display: block;
+}
+.poster-heading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  line-height: 1;
+}
+.poster-eyebrow {
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.28em;
+  color: var(--cm-text-muted);
+  text-transform: uppercase;
+}
+.poster-title {
+  display: flex;
+  flex-direction: column;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  font-size: clamp(2.8rem, 13vw, 5rem);
+  line-height: 0.95;
+}
+.poster-title .line-1 {
+  color: var(--cm-text);
+}
+.poster-title .line-2 {
+  color: var(--cm-primary);
+}
+.poster-rule {
+  width: 72px;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--cm-primary);
+  margin: 12px 0 8px;
+}
+.poster-subtitle {
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--cm-text-muted);
+}
+.poster-product {
+  position: relative;
+  width: 100%;
+  max-width: 460px;
+}
+.poster-product-img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.poster-value {
+  max-width: 520px;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: var(--cm-text-muted);
+  margin: 8px 0 0;
+}
+.poster-value strong {
+  color: var(--cm-primary);
+  font-weight: 800;
+}
+.poster-price {
+  width: 100%;
+  max-width: 460px;
+  background: var(--cm-surface);
+  border: 1px solid var(--cm-border);
+  border-radius: var(--cm-radius);
+  /* Mismo look plano que .feature: sin box-shadow. */
+  padding: 26px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.poster-price-label {
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--cm-text-muted);
+}
+.poster-price-amount {
+  font-size: clamp(2rem, 8vw, 2.8rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--cm-text);
+}
+.poster-price-currency {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--cm-text-muted);
+}
+.poster-cta {
+  width: 100%;
+  max-width: 460px;
+  font-size: 1.05rem;
+  padding: 18px 24px;
+}
+/* Desktop: el póster se ensancha y respira, sin romperse */
+@media (min-width: 861px) {
+  /* La foto usa 100vw (full-bleed); acotamos el desbordamiento al hero
+     para no provocar scroll horizontal por el ancho de la barra de scroll. */
+  .poster {
+    overflow-x: hidden;
+  }
+  /* Desktop: el texto va SOBRE la foto (overlay a la izquierda). La foto pasa
+     a ser fondo absoluto del hero; los bloques de texto se apilan encima con
+     z-index mayor. El scrim claro garantiza contraste AA del texto oscuro. */
+  .poster-inner {
+    position: relative;
+    align-items: flex-start;
+    text-align: left;
+    /* Centrado vertical del contenido overlay; el texto queda a la izquierda. */
+    justify-content: center;
+    /* Alto suficiente para que el texto quepa sin encimarse con el producto,
+       que aparece a la derecha de la foto de fondo. Subimos el mínimo para dar
+       espacio vertical al monedero (vertical/alto) y que no se recorte por arriba. */
+    min-height: clamp(620px, 52vw, 760px);
+    /* Respiro superior extra: aleja el producto del header y evita que su parte
+       de arriba quede pegada/cortada bajo la barra. */
+    padding: 72px 20px 64px;
+    gap: 24px;
+  }
+  .poster-heading {
+    align-items: flex-start;
+  }
+  .poster-title {
+    font-size: clamp(4rem, 8vw, 6rem);
+  }
+  /* Full-bleed + fondo absoluto: la foto cubre todo el .poster-inner, borde a
+     borde del viewport, por detrás del texto. */
+  .poster-product {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    max-width: none;
+    width: 100vw;
+    /* Mantiene el full-bleed: rompe el constraint del contenedor. */
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+    /* Superficie de marca bajo la imagen: con `contain` aparecen franjas
+       laterales; al pintarlas con un token de marca (no hex suelto) quedan
+       limpias en vez de transparentes/feas. La franja izquierda queda además
+       tapada por el scrim y el texto overlay. */
+    background: var(--cm-surface);
+  }
+  .poster-product-img {
+    width: 100%;
+    height: 100%;
+    /* `contain` garantiza el producto ENTERO: nunca se recorta arriba ni abajo
+       (el monedero es vertical/alto). Anclado a la derecha para que el producto
+       ocupe la mitad derecha y el texto overlay respire a la izquierda. */
+    object-fit: contain;
+    object-position: right center;
+  }
+  /* Scrim de legibilidad SOLO desktop: reusa los valores de .hero-scrim
+     (gradiente claro izquierda→transparente + fade abajo). Por encima de la
+     imagen y por debajo del texto. */
+  .poster-product::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background:
+      linear-gradient(to top, #ffffff 0%, rgba(255, 255, 255, 0) 22%),
+      linear-gradient(
+        to right,
+        rgba(248, 250, 253, 0.96) 0%,
+        rgba(248, 250, 253, 0.85) 32%,
+        rgba(248, 250, 253, 0) 58%
+      );
+  }
+  /* Bloques de texto por encima de foto + scrim, acotados a la mitad izquierda. */
+  .poster-heading,
+  .poster-value,
+  .poster-price,
+  .poster-cta {
+    position: relative;
+    z-index: 2;
+    max-width: 520px;
+  }
+  /* Tarjeta de precio y CTA: alineadas a la izquierda con ancho acotado,
+     nunca a todo el ancho del viewport. */
+  .poster-price {
+    max-width: 480px;
+    align-items: flex-start;
+    text-align: left;
+  }
+  .poster-cta {
+    max-width: 480px;
+  }
+}
+
+/* ── Features ── */
+.section {
+  padding: 56px 0;
+}
+.section h2 {
+  font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+  letter-spacing: -0.02em;
+  text-align: center;
+  margin: 0 0 12px;
+}
+.section .lead {
+  text-align: center;
+  color: var(--cm-text-muted);
+  max-width: 620px;
+  margin: 0 auto 44px;
+  line-height: 1.6;
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+.feature {
+  background: var(--cm-surface);
+  border: 1px solid var(--cm-border);
+  border-radius: var(--cm-radius);
+  padding: 26px;
+}
+.feature .ic {
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  font-size: 1.3rem;
+  margin-bottom: 16px;
+  background: var(--cm-surface-2);
+  color: var(--cm-primary);
+}
+.feature h3 {
+  margin: 0 0 8px;
+  font-size: 1.15rem;
+}
+.feature p {
+  margin: 0;
+  color: var(--cm-text-muted);
+  line-height: 1.55;
+  font-size: 0.95rem;
+}
+
+/* ── Payment methods strip ── */
+.methods {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+}
+.method-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--cm-surface);
+  border: 1px solid var(--cm-border);
+  border-radius: 10px;
+  padding: 10px 16px;
+  color: var(--cm-text-muted);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+.method-chip i {
+  color: var(--cm-primary);
+}
+
+/* ── Compra form ── */
+.compra-wrap {
+  max-width: 520px;
+  margin: 0 auto;
+}
+.card {
+  background: var(--cm-surface);
+  border: 1px solid var(--cm-border);
+  border-radius: var(--cm-radius);
+  padding: 30px;
+  box-shadow: var(--cm-shadow);
+}
+.field {
+  margin-bottom: 20px;
+}
+.field label {
+  display: block;
+  font-size: 0.9rem;
+  color: var(--cm-text-muted);
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+.input,
+.select {
+  width: 100%;
+  background: var(--cm-bg-2);
+  border: 1px solid var(--cm-border);
+  border-radius: 12px;
+  padding: 14px 16px;
+  color: var(--cm-text);
+  font-family: inherit;
+  font-size: 1.05rem;
+}
+.input:focus,
+.select:focus {
+  outline: none;
+  border-color: var(--cm-primary);
+}
+/* Quantity stepper */
+.qty {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.qty button {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: var(--cm-bg-2);
+  border: 1px solid var(--cm-border);
+  color: var(--cm-text);
+  font-size: 1rem;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+.qty button:hover:not([disabled]) {
+  border-color: var(--cm-primary);
+}
+.qty button[disabled] {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.qty-value {
+  font-size: 1.4rem;
+  font-weight: 800;
+  min-width: 40px;
+  text-align: center;
+}
+.unit-price {
+  color: var(--cm-text-muted);
+  font-size: 0.88rem;
+  margin: 12px 0 0;
+}
+.total-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 0 4px;
+  margin-bottom: 8px;
+  border-top: 1px solid var(--cm-border);
+  font-size: 1.05rem;
+}
+.total-row strong {
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.error {
+  color: var(--cm-danger);
+  font-size: 0.9rem;
+  margin: 6px 0 0;
+}
+.note {
+  color: var(--cm-text-muted);
+  font-size: 0.82rem;
+  text-align: center;
+  margin-top: 18px;
+  line-height: 1.5;
+}
+
+/* ── Result pages ── */
+.result {
+  max-width: 520px;
+  margin: 80px auto;
+  text-align: center;
+}
+.result .big-ic {
+  font-size: 3.4rem;
+  margin-bottom: 16px;
+}
+.result h1 {
+  margin: 0 0 12px;
+}
+.result p {
+  color: var(--cm-text-muted);
+  line-height: 1.6;
+}
+
+/* ── Footer ── */
+.footer {
+  border-top: 1px solid var(--cm-border);
+  padding: 32px 0;
+  margin-top: 40px;
+  color: var(--cm-text-muted);
+  font-size: 0.9rem;
+  /* Desktop: copyright a la izquierda, enlaces a la derecha, en una línea. */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+}
+.footer-copy {
+  margin: 0;
+}
+.footer-links {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.footer-links a {
+  color: var(--cm-text-muted);
+  font-weight: 600;
+  border-radius: 6px;
+}
+.footer-links a:hover {
+  color: var(--cm-text);
+}
+.footer-links a:focus-visible {
+  outline: 3px solid var(--cm-primary);
+  outline-offset: 3px;
+}
+.footer-sep {
+  color: var(--cm-border);
+  user-select: none;
+}
+/* Mobile: se apila y se centra de forma coherente. */
+@media (max-width: 860px) {
+  .footer {
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    gap: 14px;
+  }
+  .footer-links {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+}
+
+/* ── WhatsApp flotante ── */
+.wa-fab {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 1000;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--cm-whatsapp);
+  color: #fff;
+  font-size: 1.9rem;
+  line-height: 1;
+  box-shadow: var(--cm-shadow);
+  transition: background 0.2s ease, transform 0.06s ease;
+}
+.wa-fab:hover {
+  background: var(--cm-whatsapp-shade);
+}
+.wa-fab:active {
+  transform: translateY(1px);
+}
+.wa-fab:focus-visible {
+  outline: 3px solid var(--cm-primary);
+  outline-offset: 3px;
+}
+@media (max-width: 860px) {
+  .wa-fab {
+    right: 16px;
+    bottom: 16px;
+    width: 54px;
+    height: 54px;
+    font-size: 1.7rem;
+  }
+}
+
+@media (max-width: 860px) {
+  /* Hero apilado: imagen arriba (full 16:9 completa), texto centrado debajo */
+  .hero-media {
+    aspect-ratio: auto;
+    max-height: none;
+  }
+  .hero-img {
+    height: auto;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    /* difuminado del borde inferior hacia el fondo de la sección */
+    -webkit-mask-image: linear-gradient(to bottom, #000 82%, transparent 100%);
+    mask-image: linear-gradient(to bottom, #000 82%, transparent 100%);
+  }
+  .hero-scrim {
+    display: none;
+  }
+  .hero-overlay {
+    position: static;
+    display: block;
+  }
+  .hero-copy {
+    text-align: center;
+    max-width: 100%;
+    padding: 20px 20px 8px;
+  }
+  .hero-copy p.sub {
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .hero-cta {
+    justify-content: center;
+  }
+  .grid {
+    grid-template-columns: 1fr;
+  }
+  .nav-links {
+    display: none;
+  }
+  .nav-cta {
+    display: none;
+  }
+  /* Solo queda el logo: se centra en lugar de quedar pegado a la izquierda
+     por el space-between del .nav base. */
+  .nav {
+    justify-content: center;
+  }
+  .brand {
+    font-size: 1.05rem;
+  }
+  .brand-logo {
+    height: 28px;
+  }
+
+  /* ── Hero póster en mobile (390×844): cartel denso y equilibrado.
+     Escala de espaciado consistente en múltiplos de 4 (gap 12, márgenes 8/12)
+     para un ritmo apretado desde el logo hasta el CTA, con la foto del
+     producto como protagonista. ── */
+  .poster-inner {
+    padding: 16px 20px 24px;
+    gap: 12px;
+  }
+  .poster-heading {
+    gap: 4px;
+  }
+  .poster-title {
+    /* Titular ENORME con interlineado apretado, protagonista del cartel. */
+    font-size: clamp(2.8rem, 14vw, 3.6rem);
+    line-height: 0.92;
+  }
+  .poster-eyebrow {
+    font-size: 0.72rem;
+  }
+  .poster-subtitle {
+    font-size: 0.8rem;
+  }
+  .poster-rule {
+    margin: 8px 0 4px;
+  }
+  /* Foto protagonista: más grande respecto al lienzo y completa (sin recorte),
+     sin borde ni sombra de tarjeta. */
+  .poster-product {
+    max-width: 100%;
+    margin: 4px 0;
+  }
+  .poster-product-img {
+    height: auto;
+  }
+  .poster-value {
+    font-size: 0.98rem;
+    line-height: 1.5;
+    margin: 0;
+  }
+  /* Tarjeta de precio con menos peso: no compite con la foto.
+     Mismo padding que .poster-product en mobile para mantener el sistema. */
+  .poster-price {
+    padding: 20px;
+    box-shadow: none;
+    gap: 4px;
+  }
+  .poster-price-amount {
+    font-size: clamp(1.7rem, 7vw, 2.2rem);
+  }
+  .poster-cta {
+    font-size: 1rem;
+    padding: 16px 24px;
+    margin-top: 4px;
+  }
+}
+
+/* Transición al bloque siguiente: primer bloque de features más apretado
+   contra el póster en mobile, sin hueco vacío. */
+@media (max-width: 860px) {
+  #features.section {
+    padding: 32px 0;
+  }
+}
