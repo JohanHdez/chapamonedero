@@ -1,0 +1,24 @@
+# ── Dependencias ──
+**/node_modules/
+
+# ── Next.js / build ──
+**/.next/
+**/.next-build/
+**/out/
+**/build/
+
+# ── Variables de entorno / SECRETOS (NUNCA commitear) ──
+**/.env
+**/.env.local
+**/.env*.local
+
+# ── Logs ──
+*.log
+
+# ── OS / editores ──
+.DS_Store
+.idea/
+.vscode/
+
+# ── Tooling de terceros (plugin clonado, no es parte del app desplegable) ──
+agente-pagokit/

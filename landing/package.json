@@ -1,0 +1,30 @@
+{
+  "name": "chapa-monedero-landing",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Landing page + pasarela de pagos (recarga de saldo) para Chapa Monedero. Next.js + Mercado Pago.",
+  "scripts": {
+    "dev": "next dev",
+    "build": "NEXT_DIST_DIR=.next-build next build",
+    "start": "NEXT_DIST_DIR=.next-build next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "mercadopago": "^2.5.0",
+    "next": "^14.2.5",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "autoprefixer": "^10.5.0",
+    "postcss": "^8.5.15",
+    "tailwindcss": "^3.4.19",
+    "typescript": "^5.5.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
