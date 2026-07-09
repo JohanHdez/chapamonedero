@@ -59,9 +59,19 @@ export default function Home({ params }: { params: { country: string } }) {
             </h1>
 
             <div className="poster-product">
-              {/* TODO: asset — foto recortada del producto sobre pedestal de mármol; usando hero-desktop.jpeg mientras tanto */}
+              {/* Mobile: foto vertical del producto sobre pedestal de mármol (hero-mobile.jpeg).
+                  Desktop: se conserva el hero-desktop.jpeg actual (full-bleed con overlay).
+                  El toggle mobile/desktop se resuelve por CSS en globals.css. */}
               <Image
-                className="poster-product-img"
+                className="poster-product-img poster-product-img--mobile"
+                src="/hero-mobile.jpeg"
+                alt="Cerradura Chapa Monedero: chapa mecánica de cobro a moneda montada sobre un pedestal de mármol"
+                width={1023}
+                height={1537}
+                priority
+              />
+              <Image
+                className="poster-product-img poster-product-img--desktop"
                 src="/hero-desktop.jpeg"
                 alt="Cerradura Chapa Monedero: chapa mecánica de cobro a moneda para puertas de baños públicos"
                 width={1120}

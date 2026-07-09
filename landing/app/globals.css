@@ -343,6 +343,25 @@ a {
   width: 100%;
   height: auto;
 }
+/* Mobile: solo se muestra la foto vertical (hero-mobile.jpeg). */
+.poster-product-img--desktop {
+  display: none;
+}
+/* Mobile-only feather: difumina los 4 bordes de la foto para que se funda con
+   el fondo de la página y no se vea el borde rectangular duro. Es máscara de
+   alfa (no pinta color): intersecamos un gradiente vertical (arriba/abajo, el
+   corte horizontal más visible) con uno horizontal (laterales, más sutil). En
+   desktop este elemento es `display: none`, así que no afecta al hero desktop. */
+.poster-product-img--mobile {
+  -webkit-mask-image:
+    linear-gradient(to bottom, transparent 0%, #000 7%, #000 93%, transparent 100%),
+    linear-gradient(to right, transparent 0%, #000 6%, #000 94%, transparent 100%);
+  mask-image:
+    linear-gradient(to bottom, transparent 0%, #000 7%, #000 93%, transparent 100%),
+    linear-gradient(to right, transparent 0%, #000 6%, #000 94%, transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
+}
 .poster-value {
   max-width: 520px;
   font-size: 1.1rem;
@@ -447,6 +466,14 @@ a {
        ocupe la mitad derecha y el texto overlay respire a la izquierda. */
     object-fit: contain;
     object-position: right center;
+  }
+  /* Desktop: se muestra la foto horizontal (hero-desktop.jpeg) y se oculta la
+     vertical de mobile. El full-bleed/contain de arriba aplica a la desktop. */
+  .poster-product-img--mobile {
+    display: none;
+  }
+  .poster-product-img--desktop {
+    display: block;
   }
   /* Scrim de legibilidad SOLO desktop: reusa los valores de .hero-scrim
      (gradiente claro izquierda→transparente + fade abajo). Por encima de la
@@ -816,6 +843,16 @@ a {
   .nav {
     justify-content: center;
   }
+  /* Header y póster = UNA sola superficie continua. El header toma el mismo
+     --cm-surface con el que arranca el .poster, eliminando el escalón de color
+     (blanco --cm-bg → azulado --cm-surface) que se leía como una línea/división
+     bajo la barra. Sin borde inferior: la continuidad la da el color, no un filo.
+     Scopeado a mobile (aquí el .container ocupa todo el ancho, sin gutters), así
+     no toca el header full-bleed de desktop. */
+  header {
+    background: var(--cm-surface);
+    border-bottom: none;
+  }
   .brand {
     font-size: 1.05rem;
   }
@@ -862,10 +899,14 @@ a {
     line-height: 1.5;
     margin: 0;
   }
-  /* Tarjeta de precio con menos peso: no compite con la foto.
-     Mismo padding que .poster-product en mobile para mantener el sistema. */
+  /* Precio integrado en el póster plano: sin caja ni línea dura que divida.
+     Fondo y borde transparentes → se funde con la superficie del póster y queda
+     como texto flotante. La jerarquía la dan tamaño y peso (label en versalitas
+     muted, monto grande, moneda muted), no el recuadro. */
   .poster-price {
-    padding: 20px;
+    background: transparent;
+    border-color: transparent;
+    padding: 4px 0 0;
     box-shadow: none;
     gap: 4px;
   }
