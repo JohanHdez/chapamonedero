@@ -1,6 +1,6 @@
 ---
 name: payment-reviewer
-description: Revisa cambios en el flujo de pagos de Chapa Monedero (checkout y webhook de Mercado Pago) contra las invariantes de seguridad. Úsalo antes de mergear cualquier cambio que toque app/api/checkout, app/api/webhooks o lib/mercadopago.ts.
+description: Reviews changes to Chapa Monedero's payment flow (Mercado Pago checkout and webhook) against the security invariants. Use it before merging any change that touches app/api/checkout, app/api/webhooks, or lib/mercadopago.ts.
 tools: Read, Grep, Glob, Bash
 ---
 

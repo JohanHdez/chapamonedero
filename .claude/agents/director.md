@@ -1,6 +1,6 @@
 ---
 name: director
-description: Orquestador del proyecto Chapa Monedero. Úsalo para tareas que cruzan varias áreas (UI + pagos + build) o cuando no esté claro qué especialista debe actuar. Descompone el trabajo, delega en los subagentes adecuados y verifica el resultado.
+description: Orchestrator for the Chapa Monedero project. Use it for tasks that span several areas (UI + payments + build) or when it is unclear which specialist should act. It breaks the work down, delegates to the appropriate subagents, and verifies the result.
 tools: Read, Grep, Glob, Bash, Agent, Task
 ---
 

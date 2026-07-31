@@ -1,5 +1,5 @@
 ---
-description: Lanza el agente payment-reviewer sobre los cambios del flujo de pagos (checkout + webhook de Mercado Pago).
+description: Launches the payment-reviewer agent on the payment-flow changes (Mercado Pago checkout + webhook).
 argument-hint: "[archivos o ruta opcional]"
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: mercadopago-integration
-description: Conocimiento del flujo de pagos de Chapa Monedero con Mercado Pago (Preference checkout + webhook con verificación HMAC). Úsalo al añadir o modificar checkout, webhooks, precios, monedas o el manejo de pagos en landing/.
+description: Knowledge of Chapa Monedero's payment flow with Mercado Pago (Preference checkout + webhook with HMAC verification). Use it when adding or modifying checkout, webhooks, prices, currencies, or payment handling in landing/.
 ---
 
 # Integración Mercado Pago — Chapa Monedero

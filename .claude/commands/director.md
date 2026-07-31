@@ -1,5 +1,5 @@
 ---
-description: Orquesta una tarea con el agente director — la descompone y delega en los especialistas (ui-engineer, payment-reviewer, build-verifier).
+description: Orchestrates a task with the director agent — it breaks the task down and delegates to the specialists (ui-engineer, payment-reviewer, build-verifier).
 argument-hint: "[objetivo de la tarea]"
 ---
 

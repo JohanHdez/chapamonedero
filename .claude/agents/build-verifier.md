@@ -1,6 +1,6 @@
 ---
 name: build-verifier
-description: Verifica que la landing compila y type-checkea. Úsalo tras cualquier cambio de código para correr el build de producción, diagnosticar errores de tipos/compilación y proponer arreglos. No hay test runner; el build es la verificación.
+description: Verifies that the landing builds and type-checks. Use it after any code change to run the production build, diagnose type/compilation errors, and propose fixes. There is no test runner; the build is the verification.
 tools: Read, Grep, Glob, Bash
 ---
 

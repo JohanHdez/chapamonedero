@@ -1,5 +1,5 @@
 ---
-description: Type-check y build de producción de la landing (única forma de verificar cambios; no hay test runner).
+description: Type-check and production build of the landing (the only way to verify changes; there is no test runner).
 allowed-tools: Bash
 ---
 

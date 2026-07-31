@@ -40,59 +40,81 @@ The plugin is loaded into Claude Code with `claude --plugin-dir <abs-path-to>/ag
 
 ## Environment
 
-`landing/` reads (see `landing/.env.example`, copy to `.env.local`):
+`landing/` is **multi-country** (MX 🇲🇽 / CO 🇨🇴), and each country has its own
+Mercado Pago account, so its credentials live in **separate, per-country** env
+vars. The server resolves them from the country in the route segment (`/mx`,
+`/co`) via `lib/countries.ts` (`COUNTRY_CONFIG`). See `landing/.env.example`,
+copy to `.env.local`:
 
-- `MP_ACCESS_TOKEN` — Mercado Pago **private** server token (`TEST-…` sandbox / `APP_USR-…` prod). Server-only.
-- `MP_WEBHOOK_SECRET` — webhook signing secret from the MP panel; the webhook rejects requests whose HMAC doesn't match.
-- `NEXT_PUBLIC_SITE_URL` — public origin, used to build `back_urls` and `notification_url`.
+- `MP_ACCESS_TOKEN_MX` / `MP_ACCESS_TOKEN_CO` — Mercado Pago **private** server tokens (`TEST-…` sandbox / `APP_USR-…` prod), one per country. Server-only.
+- `MP_WEBHOOK_SECRET_MX` / `MP_WEBHOOK_SECRET_CO` — per-country webhook signing secrets from each MP panel; the webhook rejects requests whose HMAC doesn't match.
+- `NEXT_PUBLIC_SITE_URL` — **local/fallback only**. In production the return-URL origin is derived from the request `Host` (each domain returns/receives on its own), so this is only used in dev (e.g. an ngrok tunnel).
 
-A missing `MP_ACCESS_TOKEN`/`MP_WEBHOOK_SECRET` makes the relevant route throw/500 by design — they are never hardcoded or defaulted.
+A missing per-country `MP_ACCESS_TOKEN_*` / `MP_WEBHOOK_SECRET_*` makes that country's route throw/500 by design — they are never hardcoded or defaulted. MX credentials are placeholders until the Mexico account exists.
 
 ## Architecture — payment flow (`landing/`)
 
-The money path spans several files; understand it as one flow:
+The app is **multi-country**: `/` is a country selector, `/mx` and `/co` are the
+per-country landings, and the API routes are country-scoped
+(`/api/{checkout,webhooks/mercadopago}/[country]`). The **country is always the
+validated route segment** — never the request body, never the `Host`. The money
+path spans several files; understand it as one flow:
 
-1. **`app/components/CompraForm.tsx`** (client) — user picks currency (MXN/COP), quantity, email; posts to the checkout API. (Prices shown here are UI-only; the server is authoritative.)
-2. **`app/api/checkout/route.ts`** — takes the **unit price from the server** (`PRODUCT_PRICES`, the client price is never trusted), validates the quantity against `QUANTITY_LIMITS`, creates a Mercado Pago *Preference*, and returns its `init_point`. The browser then redirects to MP's hosted checkout.
-3. **`app/compra/{exito,pendiente,error}/`** — static return pages MP redirects back to (`back_urls` / `auto_return`).
-4. **`app/api/webhooks/mercadopago/route.ts`** — receives MP payment notifications. It does **not** trust the request body: it verifies the `x-signature` HMAC first, then re-fetches the real payment via the MP API to read its status. Confirming the order happens only on `approved`.
-5. **`lib/mercadopago.ts`** — single source for the MP client (`getMpClient`), the product (`PRODUCT`), its `PRODUCT_PRICES` / `QUANTITY_LIMITS`, and `siteUrl()`. Both routes go through it.
+1. **`app/[country]/page.tsx`** + **`app/components/CompraForm.tsx`** (client) — user is already on `/mx` or `/co`; picks quantity and email and posts to `POST /api/checkout/${country}`. Prices shown here come from `app/components/pricing-display.ts` and are **UI-only**; the server is authoritative.
+2. **`app/api/checkout/[country]/route.ts`** — validates the country by whitelist, then derives **currency and unit price on the server** from the country (`currencyForCountry` + `PRODUCT_PRICES` = `{ MXN: 2580, COP: 480000 }`); the client's price/currency are never trusted. Validates quantity against `QUANTITY_LIMITS` (1–50), creates a Mercado Pago *Preference* (with a per-country `notification_url`), and returns its `init_point`. The browser then redirects to MP's hosted checkout.
+3. **`app/compra/{exito,pendiente,error}/`** — static return pages MP redirects back to (`back_urls` / `auto_return`). They live at **root level, outside `[country]`**, so the middleware does not rewrite them.
+4. **`app/api/webhooks/mercadopago/[country]/route.ts`** — receives MP payment notifications for that country. It does **not** trust the request body: it reads the raw body, verifies the `x-signature` HMAC with that **country's** secret first, then re-fetches the real payment via the MP API for that country to read its status. Confirming the order happens only on `approved`. Legacy IPN notifications (`?topic=…`) get an inert `200`.
+5. **`lib/countries.ts`** — `COUNTRY_CONFIG` (currency, WhatsApp, env-var **names**, domain per country), `DEFAULT_COUNTRY = "co"`, and the whitelist/host helpers (`isSupportedCountry`, `currencyForCountry`, `countryForHost`). Domains: `mx → chapamonedero.mx`, `co → chapamonedero.com`.
+6. **`lib/mercadopago.ts`** — `getMpClient(country)` (per-country token), the product (`PRODUCT`), `PRODUCT_PRICES` / `QUANTITY_LIMITS`, and `siteUrl(host)` (derives the origin from the request `Host` in prod, falls back to `NEXT_PUBLIC_SITE_URL` locally).
+7. **`middleware.ts`** — domain-per-country: rewrites a known domain's root `/` to `/${country}` (never a redirect, never for `/api/**`) so the segment isn't exposed in the URL. On localhost/unknown hosts it does nothing.
 
 ### Security invariants (do not regress — they mirror PagoKit's hook rules)
 
 These are enforced by the cloned plugin's PostToolUse validators when it's loaded, and must hold regardless:
 
-- The webhook **must** verify the `x-signature` HMAC (constant-time compare) before doing any work, and read the **raw body** (`req.text()`) before parsing.
-- Secrets come only from env vars — never literals.
-- The checkout price is authoritative on the server (`PRODUCT_PRICES`), not from the client — the client only chooses currency and quantity.
-- The webhook is **idempotent** (a payment can be notified multiple times).
-- Never log PII (payer email, payment details).
+- The country is taken from the **validated route segment** (`isSupportedCountry`), never from the body or the `Host`. The `Host` only selects the return-URL origin (`siteUrl` / `countryForHost`).
+- The webhook **must** verify the `x-signature` HMAC (constant-time compare, per-country secret) before doing any work, and read the **raw body** (`req.text()`) before parsing.
+- Secrets come only from per-country env vars — never literals.
+- The checkout price and currency are authoritative on the server (`PRODUCT_PRICES` + `currencyForCountry`), not from the client — the client only chooses quantity and email.
+- The webhook is **idempotent**, keyed by the **composite** `${country}:${payment_id}` (a payment can be notified multiple times; IDs are unique per account, not globally).
+- Never log PII (payer email, payment details). Country is not PII.
 
-### Known production gaps (tracked in `landing/README.md`)
+### Known production gaps (tracked in `landing/PAGOKIT_PRODUCTION_CHECKLIST.md`, referenced by name from the webhook)
 
-- Webhook idempotency is an **in-memory `Set`** — must move to a DB `UNIQUE(payment_id)` before production (won't survive restarts / multiple instances).
+- Webhook idempotency is an **in-memory `Set`** keyed `${country}:${payment_id}` — must move to a DB `UNIQUE(country, payment_id)` before production (won't survive restarts / multiple instances).
 - Orders aren't persisted yet: there's no DB write of `external_reference` before checkout, nor transactional order confirmation on `approved`. No shipping address is captured.
+- MX is placeholder-only (credentials + WhatsApp number), and the footer legal links point to `#`.
 
 ## Directory map
 
 ```
 chapamonedero/
 ├── CLAUDE.md                  This file.
-├── landing/                   ← THE APP (Next.js 14, App Router, TS)
+├── README.md                  Monorepo overview (product, layout, quick start, deploy).
+├── .claude/                   Claude Code config: rules/, agents/, commands/, skills/ (not deployed).
+├── landing/                   ← THE APP (Next.js 14, App Router, TS) — multi-country MX/CO
 │   ├── app/                   Routes + UI (App Router). Each folder = a route segment.
-│   │   ├── page.tsx           Landing page (hero, beneficios, cómo funciona, sección compra).
-│   │   ├── layout.tsx         Root layout: <html lang="es">, Montserrat + Font Awesome, metadata.
+│   │   ├── layout.tsx         Root layout: <html lang="es">, Montserrat + Font Awesome, base metadata.
+│   │   ├── page.tsx           Country selector at "/" (links to /mx, /co; default CO).
+│   │   ├── [country]/         Per-country segment (mx|co).
+│   │   │   ├── layout.tsx      hreflang/canonical metadata + floating WhatsApp button (per-country number).
+│   │   │   └── page.tsx        Per-country landing (hero, features, cómo funciona, métodos, compra).
 │   │   ├── globals.css        All styling. Brand palette as --cm-* CSS variables.
-│   │   ├── components/        Client components. CompraForm.tsx = the purchase form ("use client").
-│   │   ├── compra/            Post-payment return pages: exito/, pendiente/, error/ (static).
-│   │   └── api/               Server route handlers (runtime = "nodejs").
-│   │       ├── checkout/      POST → server price + quantity, creates MP Preference, returns init_point.
-│   │       └── webhooks/mercadopago/  POST → verifies HMAC signature, re-fetches payment, confirms order.
-│   ├── lib/mercadopago.ts     MP client factory + product, prices & quantity limits + siteUrl(). Shared by both routes.
-│   ├── .env.example           Template for .env.local (MP tokens, site URL).
-│   └── README.md              Setup, deploy (Vercel), security notes, production TODOs.
+│   │   ├── components/        CompraForm.tsx (purchase form, "use client"), WhatsAppButton.tsx (Server),
+│   │   │                      pricing-display.ts (UI-only price map — NOT authoritative).
+│   │   ├── compra/            Post-payment return pages: exito/, pendiente/, error/ (static, root-level).
+│   │   └── api/               Server route handlers (runtime = "nodejs"), country-scoped.
+│   │       ├── checkout/[country]/      POST → server price+currency from country, quantity, creates MP Preference → init_point.
+│   │       └── webhooks/mercadopago/[country]/  POST → per-country HMAC verify, re-fetches payment, confirms on approved.
+│   ├── lib/countries.ts       COUNTRY_CONFIG (currency, WhatsApp, env-var names, domain) + whitelist/host helpers.
+│   ├── lib/mercadopago.ts     getMpClient(country) + PRODUCT, PRODUCT_PRICES, QUANTITY_LIMITS, siteUrl().
+│   ├── middleware.ts          Domain-per-country: rewrites known domain's "/" → "/${country}" (never /api).
+│   ├── vercel.json            Forces `next build` (default .next output) for Vercel.
+│   ├── .env.example           Template for .env.local (per-country MP tokens/secrets, site URL fallback).
+│   ├── PAGOKIT_PRODUCTION_CHECKLIST.md  Production gaps (idempotency, persistence, shipping, MX, legal).
+│   └── README.md              Setup, per-country env, routes, payment flow, deploy (Vercel), security, TODOs.
 │
-└── agente-pagokit/            ← PLUGIN/TOOLING (not deployed, not imported)
+└── agente-pagokit/            ← PLUGIN/TOOLING (gitignored, not deployed, not imported)
     ├── .claude-plugin/        plugin.json manifest.
     ├── commands/              Slash commands: start.md, doctor.md, test.md (→ /pagokit:start etc.).
     ├── skills/                payment-advisor (regions/providers data) + integration-builder (templates).
@@ -103,4 +125,4 @@ chapamonedero/
 
 ## Design conventions (`landing/`)
 
-The brand styling derives from the live chapamonedero.net app (Ionic-based): **Montserrat** font, dark theme, Ionic default palette. All colors live as CSS custom properties (`--cm-*`) in `app/globals.css`; reuse those variables rather than hardcoding hex values. Copy/UI text is in **Spanish**.
+The brand styling uses **Montserrat** and a **light theme** (white background with brand blue `--cm-primary` #2563eb). All colors live as CSS custom properties (`--cm-*`) in `app/globals.css` and as matching Tailwind `cm-*` tokens (`tailwind.config.ts`); reuse those rather than hardcoding hex values. Copy/UI text is in **Spanish**. See `.claude/rules/frontend-style.md`.

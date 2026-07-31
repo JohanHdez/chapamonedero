@@ -22,3 +22,6 @@
 
 # ── Tooling de terceros (plugin clonado, no es parte del app desplegable) ──
 agente-pagokit/
+
+# ── Ajustes locales de Claude Code (por usuario, no compartir) ──
+**/.claude/settings.local.json

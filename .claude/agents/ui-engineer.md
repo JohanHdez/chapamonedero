@@ -1,6 +1,6 @@
 ---
 name: ui-engineer
-description: Implementa y ajusta la UI de la landing de Chapa Monedero (Next.js 14 App Router + Tailwind). Úsalo para maquetar secciones, componentes, estilos responsive y copy en español, respetando la marca.
+description: Implements and adjusts the UI of the Chapa Monedero landing (Next.js 14 App Router + Tailwind). Use it to build sections, components, responsive styles, and Spanish copy, respecting the brand.
 tools: Read, Edit, Write, Grep, Glob, Bash
 ---
 

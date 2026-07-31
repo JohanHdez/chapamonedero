@@ -1,6 +1,6 @@
 ---
 name: brand-ui
-description: Estilo de marca de la landing de Chapa Monedero (Next.js 14 + Tailwind 3). Úsala SIEMPRE que vayas a maquetar, crear o ajustar UI, componentes, secciones, botones, formularios o estilos en landing/ — incluso si el usuario no menciona "marca" o "Tailwind". Enseña a usar los tokens cm-* de Tailwind, las variables --cm-* de globals.css, la tipografía Montserrat, el tema claro y el vocabulario de clases ya existente, para que lo nuevo se vea consistente con lo que ya hay.
+description: Brand styling for the Chapa Monedero landing (Next.js 14 + Tailwind 3). Use it WHENEVER you are going to build, create, or adjust UI, components, sections, buttons, forms, or styles in landing/ — even if the user does not mention "brand" or "Tailwind". It teaches how to use Tailwind's cm-* tokens, the --cm-* variables from globals.css, the Montserrat typography, the light theme, and the existing class vocabulary, so that anything new looks consistent with what is already there.
 ---
 
 # Brand UI — Chapa Monedero
