@@ -29,8 +29,8 @@
   /* Verde del CTA "comprar" y del sello de confianza. Derivado de --cm-success
      para mantener consistencia; centralizado como token siguiendo el patrón de
      --cm-whatsapp (nunca hex sueltos inline). */
-  --cm-cta: #16a34a;
-  --cm-cta-shade: #128a3e;
+  --cm-cta: #15803d; /* 5.0:1 con texto blanco (WCAG AA); #16a34a daba 3.3:1 */
+  --cm-cta-shade: #116932;
 }
 
 * {

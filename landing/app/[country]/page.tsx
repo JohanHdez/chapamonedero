@@ -49,11 +49,13 @@ export default function Home({ params }: { params: { country: string } }) {
 
             {/* Única h1 de la página */}
             <h1 className="poster-heading">
-              <span className="poster-eyebrow">Somos</span>
+              {/* Los {" "} separan las palabras para los lectores de pantalla (sin ellos se lee
+                  "SomosFabricantesDirectos"); no cambian el diseño porque cada línea es un bloque. */}
+              <span className="poster-eyebrow">Somos</span>{" "}
               <span className="poster-title">
-                <span className="line-1">Fabricantes</span>
+                <span className="line-1">Fabricantes</span>{" "}
                 <span className="line-2">Directos</span>
-              </span>
+              </span>{" "}
               <span className="poster-rule" aria-hidden="true" />
               <span className="poster-subtitle">Chapa Monedero Industrial</span>
             </h1>

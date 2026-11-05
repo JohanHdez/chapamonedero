@@ -19,7 +19,21 @@ export function generateMetadata({
   const { country } = params;
   if (!isSupportedCountry(country)) return {};
 
+  const url = domainUrl(country);
   return {
+    // Vista previa al compartir (WhatsApp, Facebook, LinkedIn): imagen 1200x630 en public/og.jpg.
+    metadataBase: new URL(url),
+    openGraph: {
+      type: "website",
+      url,
+      siteName: "Chapa Monedero",
+      title: "Chapa Monedero — Cobra por el uso de tu baño",
+      description:
+        "Cerradura mecánica de cobro a moneda para baños de negocios. Fabricantes directos.",
+      locale: country === "mx" ? "es_MX" : "es_CO",
+      images: [{ url: "/og.jpg", width: 1200, height: 630, alt: "Chapa Monedero de ARCAS" }],
+    },
+    twitter: { card: "summary_large_image", images: ["/og.jpg"] },
     alternates: {
       canonical: domainUrl(country),
       languages: {
